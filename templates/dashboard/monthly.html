@@ -1,44 +1,90 @@
 {% extends "base.html" %}
 {% load jalali_tags %}
 
-{% block title %}داشبورد ماهانه{% endblock %}
+{% block title %}داشبورد ماهانه | حساب یار{% endblock %}
 
 {% block content %}
-<h2>داشبورد ماهانه — {{ month_name }} {{ year }}</h2>
-
-<form method="get" class="filters">
-    <label>سال: <input type="number" name="year" value="{{ year }}"></label>
-    <label>ماه:
-        <select name="month">
-            {% for value, label in month_choices %}
-            <option value="{{ value }}" {% if month == value %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-        </select>
-    </label>
-    <button type="submit">نمایش</button>
-</form>
-
-<div class="summary-box">
-    <p>بازه: {{ start_date|jalali }} تا {{ end_date|jalali }}</p>
-    <p><strong>مجموع درآمد:</strong> <span class="positive">{{ total_income|money }}</span></p>
-    <p><strong>مجموع هزینه:</strong> <span class="negative">{{ total_expense|money }}</span></p>
-    <p><strong>خالص:</strong> {{ net|money }}</p>
-    <p><strong>تعداد تراکنش:</strong> {{ transaction_count }}</p>
-    <p><strong>مجموع موجودی کارت‌ها:</strong> {{ total_balance|money }}</p>
-    <p><strong>بیشترین هزینه:</strong>
-        {% if highest_expense_category %}
-        {{ highest_expense_category.name }} — <span class="negative">{{ highest_expense_category.total|money }}</span>
-        {% else %}—{% endif %}
-    </p>
-    <p><strong>بیشترین درآمد:</strong>
-        {% if highest_income_category %}
-        {{ highest_income_category.name }} — <span class="positive">{{ highest_income_category.total|money }}</span>
-        {% else %}—{% endif %}
-    </p>
+<div class="banner">
+    <i class="bi bi-calendar-month fs-4"></i>
+    <div>
+        <strong>داشبورد ماهانه حساب یار</strong>
+        <div class="small">{{ month_name }} {{ year }}</div>
+    </div>
 </div>
 
-<h3>موجودی هر کارت</h3>
-<table>
+<h2 class="mb-3"><i class="bi bi-calendar-month"></i> داشبورد ماهانه — {{ month_name }} {{ year }}</h2>
+
+<form method="get" class="filters">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label">سال</label>
+            <input type="number" name="year" value="{{ year }}" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">ماه</label>
+            <select name="month" class="form-select">
+                {% for value, label in month_choices %}
+                <option value="{{ value }}" {% if month == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn w-100"><i class="bi bi-search"></i> نمایش</button>
+        </div>
+    </div>
+</form>
+
+<p class="text-muted">بازه: {{ start_date|jalali }} تا {{ end_date|jalali }}</p>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="text-success fs-3"><i class="bi bi-arrow-down-circle"></i></div>
+            <div class="fw-bold">مجموع درآمد</div>
+            <div class="fs-5 positive">{{ total_income|money }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="text-danger fs-3"><i class="bi bi-arrow-up-circle"></i></div>
+            <div class="fw-bold">مجموع هزینه</div>
+            <div class="fs-5 negative">{{ total_expense|money }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="text-primary fs-3"><i class="bi bi-wallet2"></i></div>
+            <div class="fw-bold">خالص</div>
+            <div class="fs-5">{{ net|money }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="fw-bold mb-1"><i class="bi bi-hash"></i> تعداد تراکنش</div>
+            <div class="fs-5">{{ transaction_count }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="fw-bold mb-1"><i class="bi bi-bank"></i> جمع موجودی کارت‌ها</div>
+            <div class="fs-5">{{ total_balance|money }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="fw-bold mb-1"><i class="bi bi-trophy"></i> بیشترین هزینه</div>
+            <div>{% if highest_expense_category %}{{ highest_expense_category.name }} — <span class="negative">{{ highest_expense_category.total|money }}</span>{% else %}—{% endif %}</div>
+            <div class="fw-bold mt-2"><i class="bi bi-trophy-fill"></i> بیشترین درآمد</div>
+            <div>{% if highest_income_category %}{{ highest_income_category.name }} — <span class="positive">{{ highest_income_category.total|money }}</span>{% else %}—{% endif %}</div>
+        </div>
+    </div>
+</div>
+
+<h3 class="mt-4"><i class="bi bi-credit-card-2-front"></i> موجودی هر کارت</h3>
+<table class="table table-hover">
     <thead><tr><th>کارت</th><th>موجودی</th></tr></thead>
     <tbody>
         {% for c in cards %}
@@ -47,36 +93,39 @@
     </tbody>
 </table>
 
-<h3>هزینه بر اساس دسته</h3>
-<table>
-    <thead><tr><th>دسته</th><th>مبلغ</th><th>تعداد</th></tr></thead>
-    <tbody>
-        {% for row in expense_breakdown %}
-        <tr><td>{{ row.name }}</td><td>{{ row.total|money }}</td><td>{{ row.count }}</td></tr>
-        {% empty %}
-        <tr><td colspan="3">داده‌ای نیست</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<div class="chart-container">
-    <canvas id="expenseChart"></canvas>
-</div>
-
-<h3>درآمد بر اساس دسته</h3>
-<table>
-    <thead><tr><th>دسته</th><th>مبلغ</th><th>تعداد</th></tr></thead>
-    <tbody>
-        {% for row in income_breakdown %}
-        <tr><td>{{ row.name }}</td><td>{{ row.total|money }}</td><td>{{ row.count }}</td></tr>
-        {% empty %}
-        <tr><td colspan="3">داده‌ای نیست</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<div class="chart-container">
-    <canvas id="incomeChart"></canvas>
+<div class="row">
+    <div class="col-md-6">
+        <h3><i class="bi bi-pie-chart"></i> هزینه بر اساس دسته</h3>
+        <table class="table table-hover">
+            <thead><tr><th>دسته</th><th>مبلغ</th><th>تعداد</th></tr></thead>
+            <tbody>
+                {% for row in expense_breakdown %}
+                <tr><td><span class="badge bg-danger-subtle text-danger">{{ row.name }}</span></td><td>{{ row.total|money }}</td><td>{{ row.count }}</td></tr>
+                {% empty %}
+                <tr><td colspan="3" class="text-muted">داده‌ای نیست</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="chart-container">
+            <canvas id="expenseChart"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h3><i class="bi bi-bar-chart"></i> درآمد بر اساس دسته</h3>
+        <table class="table table-hover">
+            <thead><tr><th>دسته</th><th>مبلغ</th><th>تعداد</th></tr></thead>
+            <tbody>
+                {% for row in income_breakdown %}
+                <tr><td><span class="badge bg-success-subtle text-success">{{ row.name }}</span></td><td>{{ row.total|money }}</td><td>{{ row.count }}</td></tr>
+                {% empty %}
+                <tr><td colspan="3" class="text-muted">داده‌ای نیست</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="chart-container">
+            <canvas id="incomeChart"></canvas>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -86,39 +135,48 @@
 (function () {
     var expenseData = {{ expense_chart|safe }};
     var incomeData = {{ income_chart|safe }};
-    var chartOptions = {
+    var baseOptions = {
         responsive: true,
-        plugins: { legend: { display: false } },
-        scales: {
-            y: {
-                ticks: {
-                    callback: function (value) {
-                        return Number(value).toLocaleString('en-US');
-                    }
-                }
+        animation: { duration: 800, easing: 'easeOutQuart' },
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: '#0f172a',
+                titleFont: { weight: 'bold' },
+                bodyFont: { family: 'Vazirmatn' },
+                padding: 10,
+                cornerRadius: 8,
+                displayColors: false
             }
+        },
+        interaction: { mode: 'index', intersect: false },
+        hover: { mode: 'index', intersect: false },
+        scales: {
+            y: { beginAtZero: true, ticks: { callback: function (v) { return Number(v).toLocaleString('en-US'); } } }
         }
     };
-    if (expenseData.length) {
-        new Chart(document.getElementById('expenseChart'), {
-            type: 'bar',
+    function makeChart(id, data, color) {
+        if (!data.length) { return; }
+        new Chart(document.getElementById(id), {
+            type: 'line',
             data: {
-                labels: expenseData.map(function (d) { return d.label; }),
-                datasets: [{ label: 'هزینه', data: expenseData.map(function (d) { return d.value; }), backgroundColor: '#cc6666' }]
+                labels: data.map(function (d) { return d.label; }),
+                datasets: [{
+                    label: data.length ? data[0].group : '',
+                    data: data.map(function (d) { return d.value; }),
+                    borderColor: color,
+                    backgroundColor: color,
+                    fill: true,
+                    tension: 0.35,
+                    pointRadius: 4,
+                    pointHoverRadius: 7
+                }]
             },
-            options: chartOptions
+            options: baseOptions
         });
     }
-    if (incomeData.length) {
-        new Chart(document.getElementById('incomeChart'), {
-            type: 'bar',
-            data: {
-                labels: incomeData.map(function (d) { return d.label; }),
-                datasets: [{ label: 'درآمد', data: incomeData.map(function (d) { return d.value; }), backgroundColor: '#66aa66' }]
-            },
-            options: chartOptions
-        });
-    }
+    makeChart('expenseChart', expenseData, '#dc2626');
+    makeChart('incomeChart', incomeData, '#16a34a');
 })();
 </script>
 {% endblock %}

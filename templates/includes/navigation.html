@@ -1,12 +1,8 @@
-<nav>
-    <a href="{% url 'dashboard:weekly' %}">داشبورد هفتگی</a>
-    <a href="{% url 'dashboard:monthly' %}">داشبورد ماهانه</a>
-    <a href="{% url 'banking:card_list' %}">کارت‌ها</a>
-    <a href="{% url 'transactions:list' %}">تراکنش‌ها</a>
-    <a href="{% url 'banking:transfer_list' %}">انتقال‌ها</a>
-    <a href="{% url 'transactions:category_list' %}">دسته‌بندی‌ها</a>
-    <form class="nav-logout" method="post" action="{% url 'accounts:logout' %}">
-        {% csrf_token %}
-        <button type="submit">خروج ({{ user.username }})</button>
-    </form>
+<nav class="nav nav-pills gap-2 flex-wrap">
+    <a class="nav-link" href="{% url 'dashboard:weekly' %}"><i class="bi bi-calendar-week"></i> داشبورد هفتگی</a>
+    <a class="nav-link" href="{% url 'dashboard:monthly' %}"><i class="bi bi-calendar-month"></i> داشبورد ماهانه</a>
+    <a class="nav-link" href="{% url 'banking:card_list' %}"><i class="bi bi-credit-card-2-front"></i> کارت‌ها</a>
+    <a class="nav-link" href="{% url 'transactions:list' %}"><i class="bi bi-receipt"></i> تراکنش‌ها</a>
+    <a class="nav-link" href="{% url 'banking:transfer_list' %}"><i class="bi bi-arrow-left-right"></i> انتقال‌ها</a>
+    <a class="nav-link" href="{% url 'transactions:category_list' %}"><i class="bi bi-tags"></i> دسته‌بندی‌ها</a>
 </nav>
